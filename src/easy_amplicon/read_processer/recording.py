@@ -955,61 +955,61 @@ def main():
         # if i < 66:
         #     continue
         bar.set_description(sample)
-        # # ==================================
-        # rprint(f"[bold green]Extracting spacers from reads of {sample}..[/bold green]")
-        # with suppress_stdout():
-        #     process_one_sample(
-        #         sample,
-        #         # read1=glob(f"{fastq_dir}/{sample}_S*_L001_R1_001.fastq.gz")[0],
-        #         # read2=glob(f"{fastq_dir}/{sample}_S*_L001_R2_001.fastq.gz")[0],
-        #         read1=read1,
-        #         read2=read2,
-        #         output_dir=output_dir,
-        #         cpus=4,
-        #     )
-
-        # # # ==================================
-        # rprint("[bold green]Correcting UMI..[/bold green]")
-        # spacer_info_path = f"{output_dir}/collect_spacers/spacer_info/{sample}_full.tsv"
-        # spacer_info_agg_path = f"{output_dir}/collect_spacers/spacer_info/{sample}.tsv"
-        # os.makedirs(os.path.dirname(spacer_info_path), exist_ok=True)
-        # df_data = collect_spacer_info(output_dir, sample)
-        # if df_data is None:
-        #     print(f"WARNING: No arrays with UMI for {sample}, skipping mapping")
-        #     continue
-        # if df_data.num_spacers.max() == 0:
-        #     print(f"WARNING: No arryas with spacer found in {sample}, skipping mapping")
-        #     df_data.to_csv(spacer_info_path, sep="\t")
-        #     continue
-        # read2umi_corrected = correct_umi(df_data)
-        # df_data["umi_corrected"] = df_data.index.map(read2umi_corrected)
-        # assert df_data.query("good_umi").umi_corrected.notna().all()
-        # df_data_full = add_target(df_data, collapse_mode)
-        # df_data_agg = agg_arrays(df_data_full)
-        # # save spacer info
-        # df_data_full.to_csv(spacer_info_path, sep="\t")
-        # df_data_agg.to_csv(spacer_info_agg_path, sep="\t")
+        # ==================================
+        rprint(f"[bold green]Extracting spacers from reads of {sample}..[/bold green]")
+        with suppress_stdout():
+            process_one_sample(
+                sample,
+                # read1=glob(f"{fastq_dir}/{sample}_S*_L001_R1_001.fastq.gz")[0],
+                # read2=glob(f"{fastq_dir}/{sample}_S*_L001_R2_001.fastq.gz")[0],
+                read1=read1,
+                read2=read2,
+                output_dir=output_dir,
+                cpus=4,
+            )
 
         # # ==================================
-        # rprint("[bold green]Collecting spacer sequences..[/bold green]")
-        # df_data_full = pd.read_table(spacer_info_path, index_col=0)
-        # df_data_agg = pd.read_table(spacer_info_agg_path, index_col=0)
-        # output_full_path = f"{output_dir}/collect_spacers/spacer_full/{sample}.fq.gz"
-        # output_agg_path = f"{output_dir}/collect_spacers/spacer/{sample}.fq.gz"
-        # os.makedirs(os.path.dirname(output_agg_path), exist_ok=True)
-        # os.makedirs(os.path.dirname(output_full_path), exist_ok=True)
-        # collect_spacers(
-        #     df_data=df_data_agg,
-        #     data_dir=output_dir,
-        #     output_path=output_agg_path,
-        #     sample=sample,
-        # )
-        # collect_spacers(
-        #     df_data=df_data_full,
-        #     data_dir=output_dir,
-        #     output_path=output_full_path,
-        #     sample=sample,
-        # )
+        rprint("[bold green]Correcting UMI..[/bold green]")
+        spacer_info_path = f"{output_dir}/collect_spacers/spacer_info/{sample}_full.tsv"
+        spacer_info_agg_path = f"{output_dir}/collect_spacers/spacer_info/{sample}.tsv"
+        os.makedirs(os.path.dirname(spacer_info_path), exist_ok=True)
+        df_data = collect_spacer_info(output_dir, sample)
+        if df_data is None:
+            print(f"WARNING: No arrays with UMI for {sample}, skipping mapping")
+            continue
+        if df_data.num_spacers.max() == 0:
+            print(f"WARNING: No arryas with spacer found in {sample}, skipping mapping")
+            df_data.to_csv(spacer_info_path, sep="\t")
+            continue
+        read2umi_corrected = correct_umi(df_data)
+        df_data["umi_corrected"] = df_data.index.map(read2umi_corrected)
+        assert df_data.query("good_umi").umi_corrected.notna().all()
+        df_data_full = add_target(df_data, collapse_mode)
+        df_data_agg = agg_arrays(df_data_full)
+        # save spacer info
+        df_data_full.to_csv(spacer_info_path, sep="\t")
+        df_data_agg.to_csv(spacer_info_agg_path, sep="\t")
+
+        # ==================================
+        rprint("[bold green]Collecting spacer sequences..[/bold green]")
+        df_data_full = pd.read_table(spacer_info_path, index_col=0)
+        df_data_agg = pd.read_table(spacer_info_agg_path, index_col=0)
+        output_full_path = f"{output_dir}/collect_spacers/spacer_full/{sample}.fq.gz"
+        output_agg_path = f"{output_dir}/collect_spacers/spacer/{sample}.fq.gz"
+        os.makedirs(os.path.dirname(output_agg_path), exist_ok=True)
+        os.makedirs(os.path.dirname(output_full_path), exist_ok=True)
+        collect_spacers(
+            df_data=df_data_agg,
+            data_dir=output_dir,
+            output_path=output_agg_path,
+            sample=sample,
+        )
+        collect_spacers(
+            df_data=df_data_full,
+            data_dir=output_dir,
+            output_path=output_full_path,
+            sample=sample,
+        )
 
         # # ==================================
         rprint(
